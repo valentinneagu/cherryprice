@@ -4,18 +4,8 @@ services:
     build: ./authservice
     volumes:
       - ./authservice:/usr/src/app
-    links:
-    - db
     ports:
     - "5001:80"
-
-  db:
-    image: postgres
-    ports:
-    - "5432:80"
-    environment:
-      POSTGRES_USER: "auth"
-      POSTGRES_PASSWORD: "auth"
 
   scrapingservice:
     build: ./pricescraping

@@ -16,6 +16,7 @@ import requests
 AUTH_HOST = 'http://authservice:80'
 SCRAPING_HOST = 'http://scrapingservice:80'
 
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -25,6 +26,15 @@ def home():
 @app.route("/getAllUsers", methods=["GET"])
 def get_users():
     r = requests.get(AUTH_HOST + '/getAllUsers', verify=False)
+    return r.text
+
+
+@app.route("/register", methods=["POST", "DELETE"])
+def register():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    data = {'client_id': username, 'client_secret': password}
+    r = requests.post(AUTH_HOST + '/client', data=data)
     return r.text
 
 
@@ -51,18 +61,18 @@ def login():
 
 @app.route("/dashboard", methods=['GET', 'POST'])
 def dashboard():
-    # authorization_header = request.headers.get('authorization')
-    # r = verify(authorization_header)
-    user_name = 'Gogu'
-    user = User.query.filter_by(username=user_name).all()
-    if not user:
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        watchlists = Watchlist.query.filter_by(user_id=r['id']).all()
+        payload = {}
+        for item in watchlists:
+            payload[item.id] = item.name
+        payload = json.dumps(payload)
+        return make_response(payload)
+    else:
         return make_response("404")
-    watchlists = Watchlist.query.filter_by(user_id=user[0].id).all()
-    payload = {}
-    for item in watchlists:
-        payload[item.id] = item.name
-    payload = json.dumps(payload)
-    return make_response(payload)
 
 
 def verify(authorization_header):
