@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  web:
+    build: .
+    links:
+    - db
+    ports:
+    - "5001:5001"
+
+  db:
+    image: postgres
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_USER: "auth"
+      POSTGRES_PASSWORD: "auth"
