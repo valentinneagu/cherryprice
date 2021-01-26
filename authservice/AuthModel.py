@@ -19,7 +19,7 @@ from AuthResponse import AuthResponse
 DBNAME = 'postgres'
 DBUSER = 'auth'
 DBPASSWORD = 'auth'
-HOST = '172.19.0.3'
+HOST = ''
 AUTHSECRET = 'secretbarosan'
 EXPIRESSECONDS = 3000
 
