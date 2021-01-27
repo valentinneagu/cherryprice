@@ -73,25 +73,15 @@ def create(client_id, client_secret):
 
 
 def blacklist(token):
-    conn = None
-    query = "insert into blacklist (\"token\") values(\'" + token + "\')"
-    try:
-        conn = psycopg2.connect(database=DBNAME, user=DBUSER, password=DBPASSWORD, host=HOST)
-        cur = conn.cursor()
-        cur.execute(query)
-        conn.commit()
-        return True
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-        if conn is not None:
-            cur.close()
-            conn.close()
+    blacklist_element = Blacklist(token)
+    already_blacklisted = Blacklist.query.filter_by(token=token).first()
 
+    if already_blacklisted is None:
+        db.session.add(blacklist_element)
+        db.session.commit()
+        return True
+    else:
         return False
-    finally:
-        if conn is not None:
-            cur.close()
-            conn.close()
 
 
 def check_blacklist(token):
@@ -101,29 +91,6 @@ def check_blacklist(token):
         return True
     else:
         return False
-
-    # conn = None
-    # query = "select count(*) from blacklist where token=\'" + token + "\'"
-    # try:
-    #     conn = psycopg2.connect(database=DBNAME, user=DBUSER, password=DBPASSWORD, host=HOST)
-    #     cur = conn.cursor()
-    #     cur.execute(query)
-    #     result = cur.fetchone()
-    #     if result[0] == 1:
-    #         return True
-    #     else:
-    #         return False
-    # except (Exception, psycopg2.DatabaseError) as error:
-    #     print(error)
-    #     if conn is not None:
-    #         cur.close()
-    #         conn.close()
-    #
-    #     return True
-    # finally:
-    #     if conn is not None:
-    #         cur.close()
-    #         conn.close()
 
 
 def get_users():

@@ -7,8 +7,7 @@ from __init__ import *
 
 @app.route('/')
 def hello_world():
-    app.logger.info("CE ZCETI MA?")
-    return 'Hello Motherfuckers v2!'
+    return 'Hello v2!'
 
 
 @app.route("/client", methods=["POST", "DELETE"])
@@ -27,19 +26,15 @@ def client():
         app.logger.error('ID {} PASS {} FORM {}'
                          .format(client_id, client_secret_input, request.form))
 
-        # the client secret in the database is "hashed" with a one-way hash
-        # hash_object = hashlib.sha1(bytes(client_secret_input, 'utf-8'))
-        # hashed_client_secret = hash_object.hexdigest()
-
         # make a call to the model to authenticate
         create_response = AuthModel.create(client_id, client_secret_input)
-        return {'success': create_response}
+        return {'register': create_response}
 
     elif request.method == 'DELETE':
         # not yet implemented
-        return {'success': False}
+        return {'register': False}
     else:
-        return {'success': False}
+        return {'register': False}
 
 
 # API Route for checking the client_id and client_secret
@@ -75,7 +70,7 @@ def verify():
 def logout():
     token = request.form.get("token")
     status = AuthModel.blacklist(token)
-    return {'success': status}
+    return {'logout': status}
 
 
 @app.route("/getAllUsers", methods=["GET"])

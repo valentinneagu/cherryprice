@@ -31,6 +31,15 @@ def get_users():
 
 @app.route("/register", methods=["POST", "DELETE"])
 def register():
+    """
+        If user does not exist:
+        {'register': True}
+        else if user exists:
+        {'register': Username already exists}
+        else:
+        {'register': False
+        :return: json
+        """
     username = request.form.get("username")
     password = request.form.get("password")
     data = {'client_id': username, 'client_secret': password}
@@ -48,7 +57,7 @@ def login():
     }
     else
     {
-        "success": false
+        "login": false
     }
     :return: json
     """
@@ -57,6 +66,20 @@ def login():
     data = {'client_id': username, 'client_secret': password}
     r = requests.post(AUTH_HOST + '/auth', data=data)
     return r.text
+
+
+@app.route('/logout', methods=["POST"])
+def logout():
+    """
+    If token is valid:
+        {'logout': True}
+    else:
+        {'logout': False}
+    :return: json
+    """
+    authorization_header = request.headers.get('authorization')
+    r = requests.post(AUTH_HOST + '/logout', headers={'authorization': authorization_header})
+    return r
 
 
 @app.route("/dashboard", methods=['GET', 'POST'])
@@ -69,6 +92,28 @@ def dashboard():
         payload = {}
         for item in watchlists:
             payload[item.id] = item.name
+        payload = json.dumps(payload)
+        return make_response(payload)
+    else:
+        return make_response("404")
+
+
+@app.route("/watchlist", methods=['POST'])
+def watchlist():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        watchlist = request.form.get("watchlist")
+        watchlistsbridges = Watchlistbridge.query.filter_by(watchlist_id=watchlist).all()
+        payload = {}
+        for item in watchlistsbridges:
+            product = Product.query.filter_by(link=item.product_link).first()
+            aux = {}
+            aux['name'] = product.name
+            aux['link'] = product.link
+            aux['price'] = product.price
+            payload[product.id] = aux
         payload = json.dumps(payload)
         return make_response(payload)
     else:
@@ -95,96 +140,104 @@ def verify(authorization_header):
     return r
 
 
-@app.route("/price", methods=["POST"])
-def get_price():
+# @app.route("/price", methods=["POST"])
+def get_price(url):
+    # url = request.form.get("url")
+    r = requests.post(SCRAPING_HOST + '/price', data={'url': url})
+    r = json.loads(r.text)
+    return float(r['price'].replace(',', '.'))
+
+
+@app.route("/test_price", methods=["POST"])
+def test_price():
     url = request.form.get("url")
     r = requests.post(SCRAPING_HOST + '/price', data={'url': url})
-    return r.text
+    # r = float(r.text[0]["price"].replace(',','.'))
+    r = json.loads(r.text)
+    return r['price'].replace(',', '.')
 
 
-# @app.route("/watchlist", methods=['GET', 'POST'])
-# def dashboard():
-#     watchlists = Watchlist.query.filter_by(user_id='1').all()
-#     payload = {}
-#     for item in watchlists:
-#         payload[item.id] = item.name
-#     payload = json.dumps(payload)
-#     return make_response(payload)
+@app.route("/product", methods=['POST'])
+def product():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        product_link = request.form.get("product_link")
+        product_history = Product.query.filter_by(link=product_link).all()
+        payload = {}
+        for item in product_history:
+            payload[str(item.date_queried)] = item.price
+        payload = json.dumps(payload)
+        return make_response(payload)
+    else:
+        return make_response("404")
 
 
-
-# @app.route("/about")
-# def about():
-#     return render_template('about.html', title='About')
-
-
-# @app.route("/register", methods=['GET', 'POST'])
-# def register():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     form = RegistrationForm()
-#     if form.validate_on_submit():
-#         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-#         user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-#         db.session.add(user)
-#         db.session.commit()
-#         flash('Your account has been created! You are now able to log in', 'success')
-#         return redirect(url_for('login'))
-#     return render_template('register.html', title='Register', form=form)
-#
-#
-# @app.route("/login", methods=['GET', 'POST'])
-# def login():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(email=form.email.data).first()
-#         if user and bcrypt.check_password_hash(user.password, form.password.data):
-#             login_user(user, remember=form.remember.data)
-#             next_page = request.args.get('next')
-#             return redirect(next_page) if next_page else redirect(url_for('home'))
-#         else:
-#             flash('Login Unsuccessful. Please check email and password', 'danger')
-#     return render_template('login.html', title='Login', form=form)
-#
-#
-# @app.route("/logout")
-# def logout():
-#     logout_user()
-#     return redirect(url_for('home'))
+@app.route("/deleteproductfromwatchlist", methods=['POST'])
+def delete_product_from_watchlist():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        product_link = request.form.get("product_link")
+        watchlistid = request.form.get("watchlist_id")
+        product = Watchlistbridge.query.filter_by(product_link=product_link, watchlist_id=watchlistid).first()
+        db.session.delete(product)
+        db.session.commit()
+        return make_response("Success")
+    else:
+        return make_response("404")
 
 
-# def save_picture(form_picture):
-#     random_hex = secrets.token_hex(8)
-#     _, f_ext = os.path.splitext(form_picture.filename)
-#     picture_fn = random_hex + f_ext
-#     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
-#
-#     output_size = (125, 125)
-#     i = Image.open(form_picture)
-#     i.thumbnail(output_size)
-#     i.save(picture_path)
-#
-#     return picture_fn
-#
-#
-# @app.route("/account", methods=['GET', 'POST'])
-# @login_required
-# def account():
-#     form = UpdateAccountForm()
-#     if form.validate_on_submit():
-#         if form.picture.data:
-#             picture_file = save_picture(form.picture.data)
-#             current_user.image_file = picture_file
-#         current_user.username = form.username.data
-#         current_user.email = form.email.data
-#         db.session.commit()
-#         flash('Your account has been updated!', 'success')
-#         return redirect(url_for('account'))
-#     elif request.method == 'GET':
-#         form.username.data = current_user.username
-#         form.email.data = current_user.email
-#     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-#     return render_template('account.html', title='Account',
-#                            image_file=image_file, form=form)
+@app.route("/deletewatchlist", methods=['POST'])
+def delete_watchlist():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        watchlistid = request.form.get("watchlist_id")
+        watchlist = Watchlist.query.filter_by(id=watchlistid).first()
+        bridges = Watchlistbridge.query.filter_by(watchlist_id=watchlistid).all()
+        for item in bridges:
+            db.session.delete(item)
+        db.session.delete(watchlist)
+        db.session.commit()
+        return make_response("Success")
+    else:
+        return make_response("404")
+
+
+@app.route("/addwatchlist", methods=['POST'])
+def add_watchlist():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        watchlistname = request.form.get("watchlist_name")
+        new_watchlist = Watchlist(user_id=r['id'], name=watchlistname)
+        db.session.add(new_watchlist)
+        db.session.commit()
+        return make_response("Success")
+    else:
+        return make_response("404")
+
+
+@app.route("/addproduct", methods=['POST'])
+def add_product():
+    authorization_header = request.headers.get('authorization')
+    r = verify(authorization_header)
+    r = json.loads(r.text)
+    if 'clientId' in r.keys():
+        product_name = request.form.get("product_name")
+        product_link = request.form.get("product_link")
+        watchlist_id = request.form.get("watchlist_id")
+        product_price = get_price(product_link)
+        new_product = Product(name=product_name, link=product_link, price=product_price)
+        new_bridge = Watchlistbridge(watchlist_id=watchlist_id, product_link=product_link)
+        db.session.add(new_product)
+        db.session.add(new_bridge)
+        db.session.commit()
+        return make_response("Success")
+    else:
+        return make_response("404")

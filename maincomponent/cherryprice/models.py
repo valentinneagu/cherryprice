@@ -31,21 +31,22 @@ class User(db.Model, UserMixin):
 #         return f"Post('{self.title}', '{self.date_posted}')"
 #
 
+
 class Watchlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     name = db.Column(db.String(200), unique=True, nullable=False)
 
-
     def __repr__(self):
         return f"Watchlist('{self.id}', '{self.user_id}', '{self.name}')"
 
+
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), unique=True, nullable=False)
-    link = db.Column(db.String(200), unique=True, nullable=False)
+    name = db.Column(db.String(200), unique=False, nullable=False)
+    link = db.Column(db.String(200), unique=False, nullable=False)
     date_queried = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    price = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         return f"Product('{self.name}', '{self.price}', '{self.link}', '{self.date_queried}')"

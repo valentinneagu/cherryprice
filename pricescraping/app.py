@@ -33,7 +33,7 @@ def scrape():
         s = request.form['url']
         # run crawler in twisted reactor synchronously
         scrape_with_crochet(s)
-        return jsonify(output_data)
+        return output_data[0]
 
 
 @crochet.wait_for(timeout=60.0)
