@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+maincomponent/.idea/
+authservice/.idea/
+pricescraping/.idea/
