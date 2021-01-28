@@ -108,6 +108,7 @@ def watchlist():
     if 'clientId' in r.keys():
         watchlist = request.form.get("watchlist")
         watchlistsbridges = Watchlistbridge.query.filter_by(watchlist_id=watchlist).all()
+        payload = []
         for item in watchlistsbridges:
             product = Product.query.filter_by(link=item.product_link).first()
             d = {'name': product.name, 'link': product.link, 'price': product.price}
