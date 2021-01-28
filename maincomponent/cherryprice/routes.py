@@ -91,7 +91,9 @@ def dashboard():
         watchlists = Watchlist.query.filter_by(user_id=r['id']).all()
         payload = {}
         for item in watchlists:
-            payload[item.id] = item.name
+            # payload[item.id] = item.name
+            d = {'id': item.id, 'name': item.name}
+            payload.append(d)
         payload = json.dumps(payload)
         return make_response(payload)
     else:
@@ -106,14 +108,10 @@ def watchlist():
     if 'clientId' in r.keys():
         watchlist = request.form.get("watchlist")
         watchlistsbridges = Watchlistbridge.query.filter_by(watchlist_id=watchlist).all()
-        payload = {}
         for item in watchlistsbridges:
             product = Product.query.filter_by(link=item.product_link).first()
-            aux = {}
-            aux['name'] = product.name
-            aux['link'] = product.link
-            aux['price'] = product.price
-            payload[product.id] = aux
+            d = {'name': product.name, 'link': product.link, 'price': product.price}
+            payload.append(d)
         payload = json.dumps(payload)
         return make_response(payload)
     else:
