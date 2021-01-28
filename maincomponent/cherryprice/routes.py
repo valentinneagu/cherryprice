@@ -89,7 +89,7 @@ def dashboard():
     r = json.loads(r.text)
     if 'clientId' in r.keys():
         watchlists = Watchlist.query.filter_by(user_id=r['id']).all()
-        payload = {}
+        payload = []
         for item in watchlists:
             # payload[item.id] = item.name
             d = {'id': item.id, 'name': item.name}
@@ -163,7 +163,7 @@ def product():
     if 'clientId' in r.keys():
         product_link = request.form.get("product_link")
         product_history = Product.query.filter_by(link=product_link).all()
-        payload = {}
+        payload = []
         for item in product_history:
             payload[str(item.date_queried)] = item.price
         payload = json.dumps(payload)
