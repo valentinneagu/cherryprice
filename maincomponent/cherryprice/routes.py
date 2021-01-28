@@ -166,7 +166,8 @@ def product():
         product_history = Product.query.filter_by(link=product_link).all()
         payload = []
         for item in product_history:
-            payload[str(item.date_queried)] = item.price
+            d = {'date': str(item.date_queried), 'price': str(item.price)}
+            payload.append(d)
         payload = json.dumps(payload)
         return make_response(payload)
     else:
