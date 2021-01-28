@@ -1,0 +1,64 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 20vmin;
+  pointer-events: none;
+  transform: scaleX(-1);
+  margin-top: 30vh;
+  margin-right: 50vh;
+}
+.App-name {
+  font-size: calc(75px + 2vmin);
+  color: rgb(33, 201, 231);
+  margin-top: -17vh;
+  margin-left: 20vh;
+}
+.App-body {
+  background-color: #282c34;
+  min-height: 100vh;
+}
+
+.loginBtn {
+  background-color: aqua;
+  align-items: center;
+  height: 10vmin;
+  width: 25vmin;
+  margin-top: 0vh;
+  margin-left: 10vh;
+  margin-right: 10vh;
+}
+
+.logintxt{
+  color: #000;
+  margin-top: 1vh;
+  font-size: 30px;
+}
+
+.registertxt{
+  color: #000;
+  margin-top: 1vh;
+  font-size: 30px;
+}
+
+.loginModal{
+  width: 30vh;
+  align-items: center;
+  margin-left: 85vh;
+}
+
+.registerModal{
+  width: 30vh;
+  align-items: center;
+  margin-left: 85vh;
+}
+
+.registerBtn {
+  background-color: aqua;
+  align-items: center;
+  height: 10vmin;
+  width: 25vmin;
+  margin-top: 0vh;
+  margin-right: 3vh;
+}

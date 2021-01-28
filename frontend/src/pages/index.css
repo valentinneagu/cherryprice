@@ -1,0 +1,130 @@
+.menuHeader{
+    background-color: #282c34;
+    height: 5vh;
+    border-bottom: blue;
+}
+
+.menuTitle{
+    color: aqua;
+    text-align: left;
+    font-size: 30px;
+    margin-right: 175vh;
+    margin-left: -7vh;
+}
+
+.logo{
+    height: 5vh;
+    float: left;
+    transform: scaleX(-1);
+}
+
+.menuBody{
+    background-color: black;
+    height: 95vh;
+}
+
+.dashboard{
+    color: aqua;
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 20vh;
+}
+
+.electronics{
+    border: azure;
+    background-color: rgb(10, 10, 10);
+    width: 70vh;
+    height: 6vh;
+    margin-left: 70vh;
+    margin-top: 30vh;
+}
+
+.eletitle{
+    float: left;
+    font-size: 30px;
+    color: aqua;
+    margin-top: 0.5vh;
+}
+
+.eleButton{
+    background-color: aqua;
+    float:inline-end;
+    margin-top: 0.5vh;
+    height: 5vh;
+    width: 20vh;
+    border-radius: 12px;
+}
+
+.home{
+    border: azure;
+    background-color: rgb(10, 10, 10);
+    width: 70vh;
+    height: 6vh;
+    margin-left: 70vh;
+    margin-top: 3vh;
+}
+
+.hometitle{
+    float: left;
+    font-size: 30px;
+    color: aqua;
+    margin-top: 0.5vh;
+}
+
+.homeButton{
+    background-color: aqua;
+    float:inline-end;
+    margin-left: 25vh;
+    margin-top: 0.5vh;
+    height: 5vh;
+    width: 20vh;
+}
+
+.tickets{
+    border: azure;
+    background-color: rgb(10, 10, 10);
+    width: 70vh;
+    height: 6vh;
+    margin-left: 70vh;
+    margin-top: 3vh;
+}
+
+.tictitle{
+    float: left;
+    font-size: 30px;
+    color: aqua;
+    margin-top: 0.5vh;
+}
+
+.logoutbtn{
+    position: relative;
+    color: aliceblue;
+    margin-left: -10vh;
+    margin-bottom: 10vh;
+    font-size: 25px;
+}
+
+.ticButton{
+    background-color: aqua;
+    float:inline-end;
+    margin-left: 25vh;
+    margin-top: 0.5vh;
+    height: 5vh;
+    width: 20vh;
+}
+
+.button{
+    background-color: aqua;
+    border: none;
+    color: black;
+    padding: 20px;
+    font-size: 16px;
+    margin: 4px 1px;
+    margin-left: 94vh;
+}
+
+.newWishlist{
+    border-radius: 12px;
+    margin-right: 95vh;
+}
+
